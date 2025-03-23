@@ -6,9 +6,16 @@ const taskRoutes = require("./routes/taskRoutes");
 
 require("dotenv").config();
 
+//only for specific origin
+const corsOptions = {
+  origin: "http://localhost:3000",  // Allow requests only from this origin
+  methods: ["GET", "POST", "PUT", "DELETE"],  // Allow specific methods
+};
+
 const app = express();
 app.use(express.json());
-app.use(cors());
+//app.use(cors());//all origins
+app.use(cors(corsOptions));//specific origins
 app.use(helmet());
 app.use(morgan("dev"));
 
