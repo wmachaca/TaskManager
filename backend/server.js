@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const taskRoutes = require("./routes/taskRoutes");
 
 require("dotenv").config();
+require("./config/passport"); //then move to src
 
 //only for specific origin
 const corsOptions = {
@@ -12,7 +13,10 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],  // Allow specific methods
 };
 
+const authRoutes = require("./routes/authRoutes");
 const app = express();
+
+
 app.use(express.json());
 //app.use(cors());//all origins
 app.use(cors(corsOptions));//specific origins
@@ -20,6 +24,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 app.use("/api/tasks", taskRoutes);
+app.use("/api/auth",authRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack); // Log the error

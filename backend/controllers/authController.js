@@ -1,0 +1,63 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const prisma = require("../models/index");// my database is in models.. future ../config/db
+const Joi = require("joi");
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Validation Schema
+const registerSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+});
+
+// 🚀 Register User
+exports.register = async (req, res) => {
+  const { error } = registerSchema.validate(req.body);
+  if (error) return res.status(400).json({ message: error.details[0].message });
+
+  const { name, email, password } = req.body;
+
+  try {
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) return res.status(400).json({ message: "User already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: { name, email, password: hashedPassword, provider: "credentials" },
+    });
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+
+    res.json({ token, userId: user.id, name: user.name });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 🚀 Login User
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || !user.password) return res.status(400).json({ message: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+
+    res.json({ token, userId: user.id, name: user.name });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 🚀 Google Auth Callback
+exports.googleAuth = (req, res) => {
+  const token = jwt.sign({ userId: req.user.id }, JWT_SECRET, { expiresIn: "1h" });
+  res.redirect(`http://localhost:3000?token=${token}`);
+};
