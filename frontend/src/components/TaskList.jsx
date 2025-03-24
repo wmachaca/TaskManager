@@ -1,10 +1,22 @@
 import TaskItem from "./TaskItem";
 
-function TaskList({ tasks, deleteTask }) {
+function TaskList({ tasks, deleteTask, currentUserId }) {
+  // Filter tasks based on ownership/assignment: for team task manager
+  const filteredTasks = tasks.filter(task => 
+    !task.userId || // Show local tasks (no userId)
+    task.userId === currentUserId || // Show user's own tasks
+    task.assignedTo === currentUserId // Show tasks assigned to user
+  );
+
   return (
     <ul>
-      {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} deleteTask={deleteTask} />
+      {filteredTasks.map((task) => (
+        <TaskItem 
+          key={task.id} 
+          task={task} 
+          deleteTask={deleteTask} 
+          isOwner={task.userId ? task.userId === currentUserId : true}
+        />
       ))}
     </ul>
   );
