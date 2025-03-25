@@ -1,9 +1,18 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const prisma = require("../models/index");// my database is in models.. future ../config/db
+const {prisma} = require("../models/index");// my database is in models.. future ../config/db
 const Joi = require("joi");
 
+// Test connection immediately
+prisma.$connect()
+  .then(() => console.log("✅ Prisma connected to database"))
+  .catch(err => console.error("❌ Prisma connection failed:", err));
+  
 const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET is not defined in .env");
+  process.exit(1);
+}
 
 // Validation Schema
 const registerSchema = Joi.object({
@@ -33,7 +42,11 @@ exports.register = async (req, res) => {
 
     res.json({ token, userId: user.id, name: user.name });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Registration Error Details:", error);
+    res.status(500).json({ 
+      message: "Server error",
+      error: error.message  // Send error details to client for debugging
+    });
   }
 };
 

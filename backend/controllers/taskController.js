@@ -2,7 +2,9 @@ const { prisma } = require("../models");
 
 exports.getTasks = async (req, res) => {
   try {
-    const tasks = await prisma.task.findMany();
+    const tasks = await prisma.task.findMany({
+      where: { userId: req.user.id } 
+    });
     res.status(200).json(tasks);
   } catch (error) {
     console.error("🔥 Error fetching tasks:", error); // Log the actual error
@@ -12,17 +14,22 @@ exports.getTasks = async (req, res) => {
 exports.createTask = async (req, res) => {
   try {
     const { title, description } = req.body;
+    const userId = req.user.id; // Assuming you store user ID in JWT    
     const task = await prisma.task.create({  // Create a new task
       data: { 
         title,
-        description
+        description,
+        userId: parseInt(userId) // Convert to Int if needed        
       }
     });
     console.log(task); // Log to check if it was created    
     res.status(201).json(task);
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: "Invalid data" });
+    console.error("Task creation error", error);
+    res.status(400).json({ 
+      error: "Invalid data",
+      details: error.message 
+    });
   }
 };
 
