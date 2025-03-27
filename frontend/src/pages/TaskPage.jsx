@@ -155,6 +155,21 @@ function TaskPage() {
       }
     };
 
+  // Add this debug component function INSIDE your TaskPage component
+  function TailwindDebug() {
+    return (
+      <div className="fixed bottom-4 right-4 z-50 p-4 bg-yellow-100 border-2 border-red-500 rounded-lg">
+        <h2 className="font-bold text-lg mb-2">Tailwind Debug</h2>
+        <div className="bg-green-500 text-white p-4 mb-2 rounded">
+          Should be green
+        </div>
+        <div className="text-blue-500 font-bold">
+          Should be blue bold
+        </div>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="auth-message">
@@ -171,29 +186,27 @@ function TaskPage() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Task Manager</h1>
-        
+  
         {error && (
           <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
             {error}
           </div>
         )}
-{/* Add this test div */}
-<div className="bg-blue-500 text-white p-4 mb-4">
-  Tailwind Test - If you see this blue box, Tailwind is working
-</div>        
-
-        <div className="flex flex-col lg:flex-row gap-8">
+      <TailwindDebug />
+        {/* Layout Wrapper */}
+        <div className="flex flex-col lg:flex-row gap-6 w-full">
+          
           {/* Left Column - Add Task Form */}
-          <div className="lg:w-1/3">
+          <div className="lg:w-1/3 w-full flex-shrink-0">
             <div className="bg-white p-6 rounded-xl shadow-md sticky top-4">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Task</h2>
               <AddTask addTask={addTask} />
             </div>
           </div>
-
+  
           {/* Right Column - Task List */}
-          <div className="lg:w-2/3">
-            <div className="bg-white p-6 rounded-xl shadow-md">
+          <div className="lg:w-2/3 w-full">
+            <div className="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
               <TaskList 
                 tasks={allTasks} 
                 deleteTask={deleteTask} 
@@ -205,7 +218,7 @@ function TaskPage() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
 
 export default TaskPage;

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import TaskItem from "./TaskItem";
+import TaskTable from './TaskTable';
 
 function TaskList({ tasks, deleteTask, currentUserId, updateTask }) {
   console.log("Current User ID:", currentUserId); // Debug
@@ -17,7 +18,7 @@ function TaskList({ tasks, deleteTask, currentUserId, updateTask }) {
   });
 
   return (
-    <div className="space-y-4">
+    <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Your Tasks</h2>
         <div className="flex items-center gap-3">
@@ -42,17 +43,11 @@ function TaskList({ tasks, deleteTask, currentUserId, updateTask }) {
           <p className="text-gray-400 mt-1">Add a new task to get started!</p>
         </div>
       ) : (
-        <ul className="space-y-4">
-          {filteredTasks.map((task) => (
-            <TaskItem 
-              key={task.id} 
-              task={task} 
-              deleteTask={deleteTask} 
-              isOwner={task.userId ? task.userId === currentUserId : true}
-              onUpdate={updateTask}
-            />
-          ))}
-        </ul>
+        <TaskTable 
+          tasks={filteredTasks} 
+          deleteTask={deleteTask}
+          updateTask={updateTask}
+        />
       )}
     </div>
   );

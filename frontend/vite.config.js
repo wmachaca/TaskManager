@@ -7,4 +7,7 @@ export default defineConfig({
   server: {
     port: 3000, // Replace with your desired port
   },  
+  css: {
+    postcss: './postcss.config.js' // Add this line
+  }  
 })
