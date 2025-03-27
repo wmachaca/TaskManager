@@ -3,7 +3,11 @@ const { prisma } = require("../models");
 exports.getTasks = async (req, res) => {
   try {
     const tasks = await prisma.task.findMany({
-      where: { userId: req.user.id } 
+      where: { userId: req.user.id },
+      orderBy: [
+        { priority: 'desc' }, // Higher priority first
+        { dueDate: 'asc' }    // Earlier due dates first
+      ]
     });
     res.status(200).json(tasks);
   } catch (error) {
@@ -14,13 +18,16 @@ exports.getTasks = async (req, res) => {
 // Create a single task
 exports.createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, status, priority, dueDate } = req.body;
     const userId = req.user.id; // Assuming you store user ID in JWT    
     const task = await prisma.task.create({  // Create a new task
       data: { 
         title,
-        description,
-        userId: parseInt(userId) // Convert to Int if needed        
+        description: description || "",
+        status: status || "IN_COURSE",
+        priority: priority || "MEDIUM",
+        dueDate: dueDate ? new Date(dueDate) : null,
+        userId: parseInt(userId)
       }
     });
     console.log(task); // Log to check if it was created    
@@ -45,16 +52,39 @@ exports.syncTasks = async (req, res) => {
       return res.status(400).json({ error: "Invalid task data" });
     }
 
-    const createdTasks = await prisma.task.createMany({
-      data: tasks.map((task) => ({
-        title: task.title,
-        description: task.description || "",
-        userId: parseInt(userId),
-      })),
-      skipDuplicates: true, // Prevent duplicates
-    });
+    // Using transactions for bulk operations
+    const result = await prisma.$transaction(
+      tasks.map(task => 
+        prisma.task.upsert({
+          where: { 
+            id_userId: { // Compound unique constraint needed
+              id: task.id,
+              userId: parseInt(userId)
+            }
+          },
+          create: {
+            title: task.title,
+            description: task.description || "",
+            status: task.status || "IN_COURSE",
+            priority: task.priority || "MEDIUM",
+            dueDate: task.dueDate ? new Date(task.dueDate) : null,
+            userId: parseInt(userId)
+          },
+          update: {
+            title: task.title,
+            description: task.description || "",
+            status: task.status || "IN_COURSE",
+            priority: task.priority || "MEDIUM",
+            dueDate: task.dueDate ? new Date(task.dueDate) : null
+          }
+        })
+      )
+    );
 
-    res.status(201).json({ success: true, inserted: createdTasks.count });
+    res.status(201).json({ 
+      success: true, 
+      syncedTasks: result.length 
+    });
   } catch (error) {
     console.error("Task sync error", error);
     res.status(500).json({ error: "Error syncing tasks", details: error.message });
@@ -64,52 +94,89 @@ exports.syncTasks = async (req, res) => {
 exports.updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, status } = req.body;
+    const { title, description, status, priority, dueDate } = req.body;
+    
+    // First verify task exists and belongs to user
     const task = await prisma.task.findUnique({
-      where: { id: parseInt(id) }  // Find task by primary key
+      where: { 
+        id_userId: {
+          id: parseInt(id),
+          userId: req.user.id
+        }
+      }
     });
-    if (!task) return res.status(404).json({ error: "Task not found" });
+
+    if (!task) {
+      return res.status(404).json({ 
+        error: "Task not found or unauthorized"
+      });
+    }
 
     const updatedTask = await prisma.task.update({
-      where: { id: parseInt(id) },  // Update task by primary key
-      data: { title, description, status }
-    });    res.status(200).json(updatedTask);
+      where: { 
+        id_userId: {
+          id: parseInt(id),
+          userId: req.user.id
+        }
+      },
+      data: { 
+        title,
+        description,
+        status,
+        priority,
+        dueDate: dueDate ? new Date(dueDate) : null
+      }
+    });
+
+    res.status(200).json(updatedTask);
   } catch (error) {
-    res.status(400).json({ error: "Invalid data" });
+    console.error("Update error:", error);
+    res.status(400).json({ 
+      error: "Invalid data",
+      details: error.message 
+    });
   }
 };
 
 exports.deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    // Convert ID to number and validate
     const taskId = parseInt(id);
+
     if (isNaN(taskId)) {
       return res.status(400).json({ 
-        error: "Invalid task ID format",
-        details: "ID must be a number" 
+        error: "Invalid task ID" 
       });
     }
 
-    const task = await prisma.task.findFirst({ //findFirst or findUnique
+    // Verify ownership before deletion
+    const task = await prisma.task.findUnique({
       where: { 
-        id: taskId,
-        userId: req.user.id // Security check
+        id_userId: {
+          id: taskId,
+          userId: req.user.id
+        }
       }
     });
+
     if (!task) {
       return res.status(404).json({ 
-        error: "Task not found or unauthorized",
-        details: "Task doesn't exist or doesn't belong to user"
+        error: "Task not found or unauthorized"
       });
     }
+
     await prisma.task.delete({
-      where: { id: taskId }
+      where: { 
+        id_userId: {
+          id: taskId,
+          userId: req.user.id
+        }
+      }
     });
+
     res.status(200).json({ 
       success: true,
-      message: "Task deleted successfully",
-      deletedId: taskId // Return deleted ID for frontend reference
+      message: "Task deleted successfully"
     });
   } catch (error) {
     console.error("Delete error:", error);

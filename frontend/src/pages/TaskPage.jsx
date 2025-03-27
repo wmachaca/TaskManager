@@ -70,13 +70,13 @@ function TaskPage() {
   }, [user, isOnline, pendingSyncTasks]);
 
   // Function to add a task
-  const addTask = (taskText) => {
+  const addTask = (taskData) => {
     if (!user) {
       setError("Please log in to add tasks");
       return;
     }
 
-    const newTask = { id: Date.now(), title: taskText, description: "", userId: user.userId };
+    const newTask = { id: Date.now(), title: taskData.title, description: taskData.description || "", status: "IN_COURSE",priority: taskData.priority || "MEDIUM", userId: user.userId };
 
 
     if (isOnline) {
@@ -126,6 +126,35 @@ function TaskPage() {
     }
   };
 
+    // Function to update a task
+    const updateTask = (updatedTask) => {
+      if (!user) {
+        setError("Please log in to update tasks");
+        return;
+      }
+  
+      if (isOnline) {
+        axios.put(`http://localhost:5000/api/tasks/${updatedTask.id}`, updatedTask, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          setBackendTasks(backendTasks.map(task => 
+            task.id === updatedTask.id ? response.data : task
+          ));
+          setError(null);
+        })
+        .catch((error) => {
+          console.error("Error updating task:", error);
+          setError("Error updating task. Please try again later.");
+        });
+      } else {
+        setLocalTasks(localTasks.map(task => 
+          task.id === updatedTask.id ? updatedTask : task
+        ));
+        setPendingSyncTasks([...pendingSyncTasks.filter(t => t.id !== updatedTask.id), updatedTask]);
+      }
+    };
+
   if (!user) {
     return (
       <div className="auth-message">
@@ -137,17 +166,31 @@ function TaskPage() {
 
   // Combine local and backend tasks for display
   const allTasks = [...localTasks, ...backendTasks];
+
   return (
-    <div className="task-page">
-      {error && <div className="error-message">{error}</div>}
-      <AddTask addTask={addTask} />
-      <TaskList 
-        tasks={allTasks} 
-        deleteTask={deleteTask} 
-        currentUserId={user.userId} // if you use !user, you can use user?.id
-      />
+    <div className="max-w-4xl mx-auto p-4 md:p-6">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Task Manager</h1>
+      
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+      
+      <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
+        <AddTask addTask={addTask} />
+      </div>
+      
+      <div className="p-6 bg-white rounded-lg shadow-md">
+        <TaskList 
+          tasks={allTasks} 
+          deleteTask={deleteTask} 
+          currentUserId={user.userId}
+          updateTask={updateTask}
+        />
+      </div>
     </div>
-  );
+  );  
 }
 
 export default TaskPage;
