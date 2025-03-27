@@ -18,22 +18,29 @@ function TaskList({ tasks, deleteTask, currentUserId, updateTask }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Your Tasks</h2>
-        <select 
-          onChange={(e) => setFilter(e.target.value)}
-          className="p-2 border rounded bg-white"
-          value={filter}
-        >
-          <option value="ALL">All Tasks</option>
-          <option value="IN_COURSE">In Progress</option>
-          <option value="FINISHED">Completed</option>
-          <option value="STOPPED">Stopped</option>
-        </select>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">Your Tasks</h2>
+        <div className="flex items-center gap-3">
+          <label htmlFor="filter" className="text-sm text-gray-600">Filter:</label>
+          <select 
+            id="filter"
+            onChange={(e) => setFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            value={filter}
+          >
+            <option value="ALL">All Tasks</option>
+            <option value="IN_COURSE">In Progress</option>
+            <option value="FINISHED">Completed</option>
+            <option value="STOPPED">Stopped</option>
+          </select>
+        </div>
       </div>
       
       {filteredTasks.length === 0 ? (
-        <p className="text-center text-gray-500 py-4">No tasks found. Add a new task to get started!</p>
+        <div className="text-center py-8">
+          <p className="text-gray-500">No tasks found.</p>
+          <p className="text-gray-400 mt-1">Add a new task to get started!</p>
+        </div>
       ) : (
         <ul className="space-y-4">
           {filteredTasks.map((task) => (

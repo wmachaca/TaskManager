@@ -23,7 +23,7 @@ function AddTask({ addTask }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
           Task Title *
         </label>
         <input
@@ -31,13 +31,13 @@ function AddTask({ addTask }) {
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
         />
       </div>
       
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
           Description
         </label>
         <textarea
@@ -45,19 +45,19 @@ function AddTask({ addTask }) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
       
       <div>
-        <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">
           Priority
         </label>
         <select
           id="priority"
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="LOW">Low</option>
           <option value="MEDIUM">Medium</option>
@@ -68,7 +68,7 @@ function AddTask({ addTask }) {
       
       <button
         type="submit"
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
         Add Task
       </button>

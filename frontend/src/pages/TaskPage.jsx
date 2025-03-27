@@ -168,26 +168,41 @@ function TaskPage() {
   const allTasks = [...localTasks, ...backendTasks];
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Task Manager</h1>
-      
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
-          {error}
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Task Manager</h1>
+        
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+{/* Add this test div */}
+<div className="bg-blue-500 text-white p-4 mb-4">
+  Tailwind Test - If you see this blue box, Tailwind is working
+</div>        
+
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Column - Add Task Form */}
+          <div className="lg:w-1/3">
+            <div className="bg-white p-6 rounded-xl shadow-md sticky top-4">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Task</h2>
+              <AddTask addTask={addTask} />
+            </div>
+          </div>
+
+          {/* Right Column - Task List */}
+          <div className="lg:w-2/3">
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <TaskList 
+                tasks={allTasks} 
+                deleteTask={deleteTask} 
+                currentUserId={user.userId}
+                updateTask={updateTask}
+              />
+            </div>
+          </div>
         </div>
-      )}
-      
-      <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
-        <AddTask addTask={addTask} />
-      </div>
-      
-      <div className="p-6 bg-white rounded-lg shadow-md">
-        <TaskList 
-          tasks={allTasks} 
-          deleteTask={deleteTask} 
-          currentUserId={user.userId}
-          updateTask={updateTask}
-        />
       </div>
     </div>
   );  

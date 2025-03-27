@@ -5,17 +5,25 @@ function TaskItem({ task, deleteTask, isOwner, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState({ ...task });
 
+  // Updated color scheme
   const statusColors = {
-    IN_COURSE: 'bg-blue-100 text-blue-800',
-    FINISHED: 'bg-green-100 text-green-800',
-    STOPPED: 'bg-red-100 text-red-800',
+    IN_COURSE: 'bg-blue-50 border-l-4 border-blue-500',
+    FINISHED: 'bg-green-50 border-l-4 border-green-500',
+    STOPPED: 'bg-red-50 border-l-4 border-red-500',
   };
 
   const priorityColors = {
-    LOW: 'text-gray-500',
+    LOW: 'text-gray-600',
     MEDIUM: 'text-yellow-600',
     HIGH: 'text-orange-600',
     CRITICAL: 'text-red-600',
+  };
+
+  const priorityBadges = {
+    LOW: 'bg-gray-100 text-gray-800',
+    MEDIUM: 'bg-yellow-100 text-yellow-800',
+    HIGH: 'bg-orange-100 text-orange-800',
+    CRITICAL: 'bg-red-100 text-red-800',
   };
 
   const handleUpdate = () => {
@@ -25,9 +33,9 @@ function TaskItem({ task, deleteTask, isOwner, onUpdate }) {
 
 
   return (
-    <li className={`mb-4 p-4 rounded-lg shadow-md transition-all duration-200 
-      ${task.status === 'FINISHED' ? 'bg-gray-50' : 'bg-white'}
-      hover:shadow-lg`}>
+    <li className={`mb-4 p-5 rounded-lg transition-all duration-200 
+      ${statusColors[task.status] || 'bg-white border-l-4 border-gray-200'}
+      hover:shadow-md`}>
       
       {isEditing ? (
         <div className="space-y-3">
@@ -90,25 +98,26 @@ function TaskItem({ task, deleteTask, isOwner, onUpdate }) {
         </div>
       ) : (
         <div>
-          <div className="flex justify-between items-start">
-            <h3 className={`text-lg font-semibold ${task.status === 'FINISHED' ? 'line-through' : ''}`}>
+          <div className="flex justify-between items-start mb-2">
+            <h3 className={`text-lg font-semibold ${task.status === 'FINISHED' ? 'line-through text-gray-500' : 'text-gray-800'}`}>
               {task.title}
             </h3>
-            <span className={`text-xs px-2 py-1 rounded-full ${statusColors[task.status] || 'bg-gray-100'}`}>
-              {task.status?.replace('_', ' ') || 'IN_COURSE'}
+            <span className={`text-xs px-3 py-1 rounded-full ${priorityBadges[task.priority] || 'bg-gray-100'}`}>
+              {task.priority || 'MEDIUM'}
             </span>
           </div>
           
           {task.description && (
-            <p className="mt-2 text-gray-600">{task.description}</p>
+            <p className="mt-2 text-gray-700">{task.description}</p>
           )}
           
-          <div className="mt-3 flex items-center justify-between text-sm">
-            <span className={`font-medium ${priorityColors[task.priority] || 'text-gray-600'}`}>
-              {task.priority || 'MEDIUM'}
+          <div className="mt-4 flex items-center justify-between">
+            <span className={`text-xs px-3 py-1 rounded-full ${statusColors[task.status]?.replace('bg-', 'text-').replace('border-l-4 border-', '') || 'text-gray-600'}`}>
+              {task.status?.replace('_', ' ') || 'IN_PROGRESS'}
             </span>
-            <span className="text-gray-500">
-              {task.updatedAt ? `Updated: ${new Date(task.updatedAt).toLocaleDateString()}` : ''}
+            
+            <span className="text-xs text-gray-500">
+              {task.updatedAt ? `Updated: ${new Date(task.updatedAt).toLocaleString()}` : ''}
             </span>
           </div>
           
@@ -116,13 +125,13 @@ function TaskItem({ task, deleteTask, isOwner, onUpdate }) {
             <div className="mt-4 flex space-x-2">
               <button 
                 onClick={() => setIsEditing(true)}
-                className="px-3 py-1 text-sm bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200"
+                className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
               >
                 Edit
               </button>
               <button 
                 onClick={() => deleteTask(task.id)}
-                className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded hover:bg-red-200"
+                className="px-3 py-1 text-sm bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors"
               >
                 Delete
               </button>
