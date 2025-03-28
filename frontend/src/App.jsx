@@ -12,6 +12,10 @@ function App() {
     <AuthProvider>
       <Router>
         <Navbar />
+        <div className="bg-red-500 text-white p-4 font-bold">
+  THIS MUST BE RED NOW
+</div>      
+<div className="test-force-red">This must be red</div>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
