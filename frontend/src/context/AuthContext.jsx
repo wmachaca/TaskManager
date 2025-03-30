@@ -36,10 +36,14 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", res.data.token);
       setToken(res.data.token);
       setUser(jwtDecode(res.data.token));   
-      //return true; // Return success status
+      return { success: true };//
     } catch (error) {
       console.error("Login error:", error.response?.data?.message || error.message);
-      //return false; // Return failure status
+      return { 
+        success: false, 
+        message: error.response?.data?.message || "Login failed",
+        code: error.response?.data?.code 
+      };
     }
   };
 

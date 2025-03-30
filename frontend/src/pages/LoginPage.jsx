@@ -9,17 +9,46 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");  
   const [loading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);  
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    // Check attempt limit
+    if (attempts >= 2) {
+      setError("Maximum attempts reached. Please register or try again later.");
+      return;
+    }    
     try {
       setError("");
       setLoading(true);
-      await login(email, password); // Uses your existing AuthContext
-      navigate("/tasks");
+      const result = await login(email, password);
+
+      if (result.success) {
+        navigate("/tasks");
+      } else {
+        setAttempts(prev => prev + 1);
+        
+        // Custom message for unregistered users
+        if (result.code === "USER_NOT_FOUND") {
+          setError("Account not found. Please register first.");
+        } 
+        // Custom message for invalid credentials
+        else if (result.code === "INVALID_CREDENTIALS") {
+          const remainingAttempts = 2 - attempts;
+          setError(`Invalid credentials. ${remainingAttempts > 0 ? 
+            `${remainingAttempts} attempt${remainingAttempts > 1 ? 's' : ''} remaining.` : 
+            'Please register or try again later.'}`);
+        } 
+        // Default error message
+        else {
+          setError(result.message || "Login failed");
+        }
+      }      
     } catch (err) {
       setError("Failed to log in: " + err.message);
+      setAttempts(prev => prev + 1);
+    } finally {
       setLoading(false);
     }
   };
