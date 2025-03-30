@@ -156,19 +156,6 @@ function TaskPage() {
     };
 
   // Add this debug component function INSIDE your TaskPage component
-  function TailwindDebug() {
-    return (
-      <div className="fixed bottom-4 right-4 z-50 p-4 bg-yellow-100 border-2 border-red-500 rounded-lg">
-        <h2 className="font-bold text-lg mb-2">Tailwind Debug</h2>
-        <div className="bg-green-500 text-white p-4 mb-2 rounded">
-          Should be green
-        </div>
-        <div className="text-blue-500 font-bold">
-          Should be blue bold
-        </div>
-      </div>
-    );
-  }
 
   if (!user) {
     return (
@@ -192,7 +179,6 @@ function TaskPage() {
             {error}
           </div>
         )}
-      <TailwindDebug />
         {/* Layout Wrapper */}
         <div className="flex flex-col lg:flex-row gap-6 w-full">
           
