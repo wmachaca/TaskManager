@@ -38,7 +38,16 @@ exports.register = async (req, res) => {
       data: { name, email, password: hashedPassword, provider: "credentials" },
     });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+      },
+      JWT_SECRET
+    );
 
     res.json({ token, userId: user.id, name: user.name });
   } catch (error) {
@@ -61,7 +70,16 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+      },
+      JWT_SECRET
+    );
 
     res.json({ token, userId: user.id, name: user.name });
   } catch (error) {
@@ -71,6 +89,15 @@ exports.login = async (req, res) => {
 
 // 🚀 Google Auth Callback
 exports.googleAuth = (req, res) => {
-  const token = jwt.sign({ userId: req.user.id }, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign(
+    {
+      userId: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+    },
+    JWT_SECRET
+  );
   res.redirect(`http://localhost:3000?token=${token}`);
 };

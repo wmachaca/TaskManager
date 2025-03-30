@@ -8,10 +8,21 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
 
+
   useEffect(() => {
     if (token) {
-      const decoded = jwtDecode(token);
-      setUser(decoded);
+      try {
+        const decoded = jwtDecode(token);
+        setUser({
+          userId: decoded.userId,
+          name: decoded.name,
+          email: decoded.email,
+          provider: decoded.provider || 'credentials'
+        });
+      } catch (error) {
+        console.error("Token decoding failed:", error);
+        logout();
+      }
     }
   }, [token]);
 
@@ -24,16 +35,18 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("token", res.data.token);
       setToken(res.data.token);
-      setUser(jwtDecode(res.data.token));
+      setUser(jwtDecode(res.data.token));   
+      //return true; // Return success status
     } catch (error) {
       console.error("Login error:", error.response?.data?.message || error.message);
+      //return false; // Return failure status
     }
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
-    setToken(null);
+    setToken(null);    
   };
 
   return (
