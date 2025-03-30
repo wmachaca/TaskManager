@@ -30,8 +30,8 @@ function TaskList({ tasks, deleteTask, currentUserId, updateTask }) {
             value={filter}
           >
             <option value="ALL">All Tasks</option>
-            <option value="IN_COURSE">In Progress</option>
-            <option value="FINISHED">Completed</option>
+            <option value="IN_COURSE">In Course</option>
+            <option value="FINISHED">Finished</option>
             <option value="STOPPED">Stopped</option>
           </select>
         </div>

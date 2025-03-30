@@ -81,8 +81,8 @@ export default function TaskRow({ task, deleteTask, updateTask }) {
             onChange={(e) => setEditedTask({...editedTask, status: e.target.value})}
             className="p-2 border rounded"
           >
-            <option value="IN_COURSE">In Progress</option>
-            <option value="FINISHED">Completed</option>
+            <option value="IN_COURSE">In Course</option>
+            <option value="FINISHED">Finished</option>
             <option value="STOPPED">Stopped</option>
           </select>
         ) : (
