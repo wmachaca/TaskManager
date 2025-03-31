@@ -35,11 +35,11 @@ function TaskPage() {
         .get('/api/tasks', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
-        .then((response) => {
+        .then(response => {
           setBackendTasks(response.data);
           setError(null);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error fetching tasks:', error);
           setError('Error fetching tasks. Please try again later.');
         });
@@ -67,7 +67,7 @@ function TaskPage() {
           setLocalTasks([]);
           setError(null);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error syncing tasks:', error);
           setError('Error syncing tasks. Please try again later.');
         });
@@ -75,7 +75,7 @@ function TaskPage() {
   }, [user, isOnline, pendingSyncTasks]);
 
   // Function to add a task
-  const addTask = (taskData) => {
+  const addTask = taskData => {
     if (!user) {
       setError('Please log in to add tasks');
       return;
@@ -95,11 +95,11 @@ function TaskPage() {
         .post('/api/tasks', newTask, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
-        .then((response) => {
+        .then(response => {
           setBackendTasks([...backendTasks, response.data]);
           setError(null);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error adding task:', error);
           setError('Error adding task. Please try again later.');
         });
@@ -110,15 +110,15 @@ function TaskPage() {
   };
 
   // Function to delete a task
-  const deleteTask = (id) => {
+  const deleteTask = id => {
     if (!user) {
       setError('Please log in to delete tasks');
       return;
     }
 
     // Delete from local tasks
-    setLocalTasks(localTasks.filter((task) => task.id !== id));
-    setPendingSyncTasks(pendingSyncTasks.filter((task) => task.id !== id));
+    setLocalTasks(localTasks.filter(task => task.id !== id));
+    setPendingSyncTasks(pendingSyncTasks.filter(task => task.id !== id));
 
     // Delete from backend
     if (isOnline) {
@@ -127,10 +127,10 @@ function TaskPage() {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
         .then(() => {
-          setBackendTasks(backendTasks.filter((task) => task.id !== id));
+          setBackendTasks(backendTasks.filter(task => task.id !== id));
           setError(null);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error deleting task:', error);
           setError('Error deleting task. Please try again later.');
         });
@@ -138,7 +138,7 @@ function TaskPage() {
   };
 
   // Function to update a task
-  const updateTask = (updatedTask) => {
+  const updateTask = updatedTask => {
     if (!user) {
       setError('Please log in to update tasks');
       return;
@@ -149,22 +149,19 @@ function TaskPage() {
         .put(`/api/tasks/${updatedTask.id}`, updatedTask, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
-        .then((response) => {
+        .then(response => {
           setBackendTasks(
-            backendTasks.map((task) => (task.id === updatedTask.id ? response.data : task)),
+            backendTasks.map(task => (task.id === updatedTask.id ? response.data : task)),
           );
           setError(null);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error updating task:', error);
           setError('Error updating task. Please try again later.');
         });
     } else {
-      setLocalTasks(localTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
-      setPendingSyncTasks([
-        ...pendingSyncTasks.filter((t) => t.id !== updatedTask.id),
-        updatedTask,
-      ]);
+      setLocalTasks(localTasks.map(task => (task.id === updatedTask.id ? updatedTask : task)));
+      setPendingSyncTasks([...pendingSyncTasks.filter(t => t.id !== updatedTask.id), updatedTask]);
     }
   };
 

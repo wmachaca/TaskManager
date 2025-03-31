@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import apiClient from '../utils/apiClient';
 import { jwtDecode } from 'jwt-decode';
 
@@ -50,6 +51,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired, // Validate that children is a React node and is required
 };
 
 export default AuthContext;

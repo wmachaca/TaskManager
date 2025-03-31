@@ -12,8 +12,8 @@ export default function HomePage() {
         <p className="text-xl text-gray-600 max-w-md text-center md:text-left">
           Organize your work and life with our simple yet powerful task management tool.
         </p>
-        
-        <div 
+
+        <div
           className="bg-white p-6 rounded-lg shadow-xl cursor-pointer transform hover:scale-105 transition-transform"
           onClick={() => setShowLoginPrompt(true)}
         >
@@ -25,14 +25,14 @@ export default function HomePage() {
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md">
             <p className="text-gray-700 mb-4">Please log in to view your tasks</p>
             <div className="flex space-x-4">
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
               >
                 Login
               </Link>
-              <Link 
-                to="/register" 
+              <Link
+                to="/register"
                 className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md transition-colors"
               >
                 Register
@@ -44,9 +44,9 @@ export default function HomePage() {
 
       {/* Right side - Illustration */}
       <div className="md:w-1/2 flex justify-center p-8">
-        <img 
-          src="https://illustrations.popsy.co/amber/digital-nomad.svg" 
-          alt="Task management illustration" 
+        <img
+          src="https://illustrations.popsy.co/amber/digital-nomad.svg"
+          alt="Task management illustration"
           className="max-w-md w-full"
         />
       </div>

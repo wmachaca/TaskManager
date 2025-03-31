@@ -11,7 +11,7 @@ function LoginPage() {
   const [attempts, setAttempts] = useState(0);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async e => {
     e.preventDefault();
     // Check attempt limit
     if (attempts >= 2) {
@@ -26,7 +26,7 @@ function LoginPage() {
       if (result.success) {
         navigate('/tasks');
       } else {
-        setAttempts((prev) => prev + 1);
+        setAttempts(prev => prev + 1);
 
         // Custom message for unregistered users
         if (result.code === 'USER_NOT_FOUND') {
@@ -50,7 +50,7 @@ function LoginPage() {
       }
     } catch (err) {
       setError('Failed to log in: ' + err.message);
-      setAttempts((prev) => prev + 1);
+      setAttempts(prev => prev + 1);
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ function LoginPage() {
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -96,7 +96,7 @@ function LoginPage() {
               type="password"
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -123,7 +123,7 @@ function LoginPage() {
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Don't have an account?{' '}
+            Do&apos;t have an account?{' '}
             <Link to="/register" className="text-blue-600 hover:underline">
               Register here
             </Link>
