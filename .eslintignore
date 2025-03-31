@@ -6,10 +6,7 @@ out/
 coverage/
 *.log
 logs/
-.idea/
 .vscode/
-*.swp
 .DS_Store
 Thumbs.db
-**/generated/
 **/__snapshots__/

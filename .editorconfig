@@ -39,18 +39,9 @@ indent_style = tab  # Makefiles require actual tabs
 indent_size = 2
 
 # Configuration files
-[.eslintrc]
-indent_size = 2
-
-[.prettierrc]
-indent_size = 2
-
-[.babelrc]
+[*.{eslintrc,prettierrc,babelrc}]
 indent_size = 2
 
 # Git files
-[.gitattributes]
-indent_size = 2
-
-[.gitignore]
+[*.{gitattributes,gitignore}]
 indent_size = 2

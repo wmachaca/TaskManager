@@ -1,10 +1,10 @@
 import React from 'react';
-function TestComponent() {
-  const message = 'Hello World';
+
+function BrokenComponent() {
   useEffect(() => {
-    // <- ESLint error: 'useEffect' not defined
-    console.log(message); // <- ESLint warning: 'message' missing in deps
+    // Should error: no useEffect import
+    console.log(undefinedVar); // Should error: undefined var
   }, []);
-  return <div>{message}</div>;
+  return <div>{unusedVar}</div>; // Should warn: unused var
 }
 a = 5;
