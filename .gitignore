@@ -14,7 +14,9 @@ yarn-error.log
 .env
 
 # VS Code settings
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 
 # OS-specific files
 .DS_Store
