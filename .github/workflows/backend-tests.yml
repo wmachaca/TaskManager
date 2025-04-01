@@ -1,0 +1,33 @@
+name: Backend Tests
+
+on:
+  pull_request:
+    paths:
+      - 'TaskManager/backend/**' # Solo se activa si hay cambios en backend
+    branches: -none # [main, develop]
+  push:
+    branches: -none # [main, develop] # Run tests when code is merged into these branches
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ./TaskManager/backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Match your Debian Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
