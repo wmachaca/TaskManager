@@ -100,5 +100,12 @@ exports.googleAuth = (req, res) => {
     },
     JWT_SECRET,
   );
-  res.redirect(`http://localhost:3000?token=${token}`);
+  // Use FRONTEND_URL from .env
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (!frontendUrl) {
+    console.error('FATAL: FRONTEND_URL is not defined in .env');
+    return res.status(500).json({ message: 'Server misconfiguration' });
+  }
+
+  res.redirect(`${frontendUrl}?token=${token}`);
 };
