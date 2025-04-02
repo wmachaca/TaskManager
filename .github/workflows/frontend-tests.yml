@@ -27,7 +27,9 @@ jobs:
 
       - name: Configure Git (Windows)
         if: matrix.os == 'windows-latest'
-        run: git config --global core.autocrlf input # LF line endings
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf input
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
