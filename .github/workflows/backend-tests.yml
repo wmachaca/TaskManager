@@ -18,12 +18,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          sparse-checkout: |
+            backend/
+            !**/node_modules/
+          sparse-checkout-cone-mode: false
           fetch-depth: 1
 
       # 2. WINDOWS CONFIG
       - name: Configure Windows
         run: |
           git config --global core.longpaths true
+          git config --global core.symlinks false
           net start postgresql-x64-14 || true
 
       # 3. NODE SETUP
