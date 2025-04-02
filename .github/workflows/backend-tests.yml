@@ -3,7 +3,7 @@ name: Backend Tests
 on:
   pull_request:
     paths:
-      - 'TaskManager/backend/**' # Solo se activa si hay cambios en backend
+      - 'backend/**' # Solo se activa si hay cambios en backend
     branches: [main, develop] # -none
   #push:
   #  branches: -none # [main, develop] # Run tests when code is merged into these branches
@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: ./TaskManager/backend
+        working-directory: ./backend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -3,7 +3,7 @@ name: Frontend Tests
 on:
   pull_request:
     paths:
-      - 'TaskManager/frontend/**' # Only triggers if there are changes in the frontend folder
+      - 'frontend/**' # Only triggers if there are changes in the frontend folder
     branches: [main, develop] # Trigger for pull requests to the main or develop branches
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./TaskManager/frontend # Ensure you're in the frontend directory
+        working-directory: ./frontend # Ensure you're in the frontend directory
 
     steps:
       - name: Checkout repository
