@@ -4,9 +4,11 @@
   "printWidth": 100,
   "tabWidth": 2,
   "trailingComma": "all",
-  "arrowParens": "always",
+  "arrowParens": "avoid",
   "bracketSpacing": true,
   "jsxSingleQuote": false,
   "endOfLine": "lf",
-  "useTabs": false
+  "useTabs": false,
+  "arrayBracketSpacing": false,
+  "arrayBracketNewline": true
 }

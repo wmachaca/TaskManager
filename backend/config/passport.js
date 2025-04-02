@@ -1,8 +1,8 @@
 //configure passport.js for google login
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const prisma = require("../models/index");// it is in ./models/index.js ... ./db for future
-require("dotenv").config();
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const prisma = require('../models/index'); // it is in ./models/index.js ... ./db for future
+require('dotenv').config();
 
 passport.use(
   new GoogleStrategy(
@@ -20,7 +20,7 @@ passport.use(
               name: profile.displayName,
               email: profile.emails[0].value,
               googleId: profile.id,
-              provider: "google",
+              provider: 'google',
             },
           });
         }
@@ -28,8 +28,8 @@ passport.use(
       } catch (error) {
         return done(error, null);
       }
-    }
-  )
+    },
+  ),
 );
 
 passport.serializeUser((user, done) => done(null, user.id));

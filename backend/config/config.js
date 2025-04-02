@@ -10,11 +10,11 @@ module.exports = {
   },
   test: {
     dialect: 'postgres',
-    database: testConfig.database || 'taskmanager_test',  // Extract database name
-    username: testConfig.user || 'postgres',             // Extract username
-    password: testConfig.password || 'database',         // Extract password
-    host: testConfig.host || 'localhost',                // Extract host
-    port: testConfig.port || 5432,                       // Default PostgreSQL port
-    logging: false,                                      // Disable logs in test mode
+    database: testConfig.database || 'taskmanager_test', // Extract database name
+    username: testConfig.user || 'postgres', // Extract username
+    password: testConfig.password || 'database', // Extract password
+    host: testConfig.host || 'localhost', // Extract host
+    port: testConfig.port || 5432, // Default PostgreSQL port
+    logging: false, // Disable logs in test mode
   },
 };

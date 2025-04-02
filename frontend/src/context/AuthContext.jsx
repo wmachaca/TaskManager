@@ -1,13 +1,13 @@
-import { createContext, useState, useEffect } from "react";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import { createContext, useState, useEffect } from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
+import apiClient from '../utils/apiClient';
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
-
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
     if (token) {
@@ -17,10 +17,10 @@ export const AuthProvider = ({ children }) => {
           userId: decoded.userId,
           name: decoded.name,
           email: decoded.email,
-          provider: decoded.provider || 'credentials'
+          provider: decoded.provider || 'credentials',
         });
       } catch (error) {
-        console.error("Token decoding failed:", error);
+        console.error('Token decoding failed:', error);
         logout();
       }
     }
@@ -28,36 +28,33 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+      const res = await apiClient.post('/api/auth/login', { email, password });
 
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem('token', res.data.token);
       setToken(res.data.token);
-      setUser(jwtDecode(res.data.token));   
-      return { success: true };//
+      setUser(jwtDecode(res.data.token));
+      return { success: true }; //
     } catch (error) {
-      console.error("Login error:", error.response?.data?.message || error.message);
-      return { 
-        success: false, 
-        message: error.response?.data?.message || "Login failed",
-        code: error.response?.data?.code 
+      console.error('Login error:', error.response?.data?.message || error.message);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Login failed',
+        code: error.response?.data?.code,
       };
     }
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
     setUser(null);
-    setToken(null);    
+    setToken(null);
   };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired, // Validate that children is a React node and is required
 };
 
 export default AuthContext;

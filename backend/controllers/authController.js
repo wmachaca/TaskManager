@@ -1,16 +1,17 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const {prisma} = require("../models/index");// my database is in models.. future ../config/db
-const Joi = require("joi");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { prisma } = require('../models/index'); // my database is in models.. future ../config/db
+const Joi = require('joi');
 
 // Test connection immediately
-prisma.$connect()
-  .then(() => console.log("✅ Prisma connected to database"))
-  .catch(err => console.error("❌ Prisma connection failed:", err));
-  
+prisma
+  .$connect()
+  .then(() => console.log('✅ Prisma connected to database'))
+  .catch(err => console.error('❌ Prisma connection failed:', err));
+
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-  console.error("FATAL: JWT_SECRET is not defined in .env");
+  console.error('FATAL: JWT_SECRET is not defined in .env');
   process.exit(1);
 }
 
@@ -30,12 +31,12 @@ exports.register = async (req, res) => {
 
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
+    if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, provider: "credentials" },
+      data: { name, email, password: hashedPassword, provider: 'credentials' },
     });
 
     const token = jwt.sign(
@@ -44,17 +45,17 @@ exports.register = async (req, res) => {
         name: user.name,
         email: user.email,
         iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+        exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiration
       },
-      JWT_SECRET
+      JWT_SECRET,
     );
 
     res.json({ token, userId: user.id, name: user.name });
   } catch (error) {
-    console.error("Registration Error Details:", error);
-    res.status(500).json({ 
-      message: "Server error",
-      error: error.message  // Send error details to client for debugging
+    console.error('Registration Error Details:', error);
+    res.status(500).json({
+      message: 'Server error',
+      error: error.message, // Send error details to client for debugging
     });
   }
 };
@@ -65,10 +66,10 @@ exports.login = async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.password) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user || !user.password) return res.status(400).json({ message: 'Invalid credentials' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign(
       {
@@ -76,14 +77,14 @@ exports.login = async (req, res) => {
         name: user.name,
         email: user.email,
         iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+        exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiration
       },
-      JWT_SECRET
+      JWT_SECRET,
     );
 
     res.json({ token, userId: user.id, name: user.name });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -95,9 +96,16 @@ exports.googleAuth = (req, res) => {
       name: req.user.name,
       email: req.user.email,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+      exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiration
     },
-    JWT_SECRET
+    JWT_SECRET,
   );
-  res.redirect(`http://localhost:3000?token=${token}`);
+  // Use FRONTEND_URL from .env
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (!frontendUrl) {
+    console.error('FATAL: FRONTEND_URL is not defined in .env');
+    return res.status(500).json({ message: 'Server misconfiguration' });
+  }
+
+  res.redirect(`${frontendUrl}?token=${token}`);
 };

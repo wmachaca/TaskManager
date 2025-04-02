@@ -1,0 +1,33 @@
+name: Frontend Tests
+
+on:
+  pull_request:
+    paths:
+      - 'TaskManager/frontend/**' # Only triggers if there are changes in the frontend folder
+    branches: [main, develop] # Trigger for pull requests to the main or develop branches
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest] # Matrix for different OSes
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        working-directory: ./TaskManager/frontend # Ensure you're in the frontend directory
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Check out the code
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4 # Set up Node.js
+        with:
+          node-version: '18' # Match your Node.js version used for the frontend
+
+      - name: Install dependencies
+        run: npm install # Install dependencies for the frontend
+
+      - name: Run Vitest tests
+        run: npm run test # Run the tests (assumes you have a test script set up in package.json)
