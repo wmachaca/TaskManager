@@ -15,7 +15,7 @@ beforeAll(async () => {
       email: 'test@example.com', // Use a test user from your DB
       password: 'testpassword',
     });
-
+  console.log('Login response:', loginRes.body); // Debugging: log the response
   authToken = loginRes.body.token; // Adjust based on your API's response structure
 });
 

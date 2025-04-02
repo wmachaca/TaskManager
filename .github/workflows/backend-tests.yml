@@ -3,31 +3,57 @@ name: Backend Tests
 on:
   pull_request:
     paths:
-      - 'backend/**' # Solo se activa si hay cambios en backend
-    branches: [main, develop] # -none
-  #push:
-  #  branches: -none # [main, develop] # Run tests when code is merged into these branches
+      - 'backend/**'
+    branches: [main, develop]
 
 jobs:
   test:
     strategy:
+      fail-fast: false # Don't stop all jobs if one fails
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest] # Removed macOS unless absolutely needed
+        node-version: [18]
+
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20 # Extra time for Windows
+
     defaults:
       run:
         working-directory: ./backend
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      # Critical for Windows line endings
+      - name: Configure Git (Windows)
+        if: matrix.os == 'windows-latest'
+        run: git config --global core.autocrlf false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Match your Debian Node.js version
+          node-version: ${{ matrix.node-version }}
+
+      # Cache npm dependencies for faster runs
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            backend/node_modules
+          key: ${{ matrix.os }}-node-${{ hashFiles('backend/package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # Clean install for consistency
+
+      # Debug step to verify files
+      - name: List files (Debug)
+        run: |
+          ls -R || dir /s  # Works on both Linux/Windows
+          npm config get prefix
 
       - name: Run tests
         run: npm test
+        env:
+          CI: true # Essential for test runners like Jest

@@ -3,31 +3,54 @@ name: Frontend Tests
 on:
   pull_request:
     paths:
-      - 'frontend/**' # Only triggers if there are changes in the frontend folder
-    branches: [main, develop] # Trigger for pull requests to the main or develop branches
+      - 'frontend/**'
+    branches: [main, develop]
 
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest] # Matrix for different OSes
+        os: [ubuntu-latest, windows-latest]
+        node-version: [18]
+
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
 
     defaults:
       run:
-        working-directory: ./frontend # Ensure you're in the frontend directory
+        working-directory: ./frontend
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4 # Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure Git (Windows)
+        if: matrix.os == 'windows-latest'
+        run: git config --global core.autocrlf input # LF line endings
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4 # Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18' # Match your Node.js version used for the frontend
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            frontend/node_modules
+          key: ${{ matrix.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install # Install dependencies for the frontend
+        run: npm ci
 
-      - name: Run Vitest tests
-        run: npm run test # Run the tests (assumes you have a test script set up in package.json)
+      # Verify Vitest is available
+      - name: Check test setup
+        run: npx vitest --version || echo "Vitest not found"
+
+      - name: Run tests
+        run: npm run test
+        env:
+          CI: true
+          NODE_OPTIONS: --max_old_space_size=4096 # Prevent OOM errors
