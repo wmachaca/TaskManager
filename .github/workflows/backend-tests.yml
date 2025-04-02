@@ -1,7 +1,7 @@
 name: Backend Tests
 
 on:
-  pull_request:
+  push:
     paths:
       - 'backend/**'
     branches: [main, develop]
@@ -9,29 +9,22 @@ on:
 jobs:
   test:
     strategy:
-      fail-fast: false # Don't stop all jobs if one fails
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest] # Removed macOS unless absolutely needed
+        os: [ubuntu-latest, windows-latest]
         node-version: [18]
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20 # Extra time for Windows
-
-    defaults:
-      run:
-        working-directory: ./backend
+    timeout-minutes: 20
 
     steps:
+      # 1. SETUP SECURE ENVIRONMENT
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          sparse-checkout: |
-            backend/
-            !backend/node_modules/
-          sparse-checkout-cone-mode: false
 
-      # Critical for Windows line endings
+      # 2. WINDOWS SPECIFIC CONFIG
       - name: Configure Git (Windows)
         if: matrix.os == 'windows-latest'
         run: |
@@ -39,30 +32,42 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.symlinks false
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      # 3. NODE.JS SETUP
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Cache npm dependencies for faster runs
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.npm
-            backend/node_modules
-          key: ${{ matrix.os }}-node-${{ hashFiles('backend/package-lock.json') }}
-
-      - name: Install dependencies
-        run: npm ci # Clean install for consistency
-
-      # Debug step to verify files
-      - name: List files (Debug)
+      # 4. DATABASE SETUP (Using your .env config)
+      - name: Start PostgreSQL (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          ls -R || dir /s  # Works on both Linux/Windows
-          npm config get prefix
+          net start postgresql-x64-14 || echo "PostgreSQL already running"
+          createdb taskmanager_test || echo "Database may exist"
 
+      - name: Start PostgreSQL (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo systemctl start postgresql || true
+          sudo -u postgres createdb taskmanager_test || true
+
+      # 5. TEST SETUP
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./backend
+
+      - name: Prepare test database
+        run: |
+          npx prisma generate
+          npx prisma migrate dev --name init
+          npx prisma db push --accept-data-loss
+        working-directory: ./backend
+        env:
+          DATABASE_URL: 'postgresql://postgres:elmundoesancho@localhost:5432/taskmanager_test'
+
+      # 6. RUN TESTS
       - name: Run tests
         run: npm test
+        working-directory: ./backend
         env:
-          CI: true # Essential for test runners like Jest
+          DATABASE_URL: 'postgresql://postgres:elmundoesancho@localhost:5432/taskmanager_test'
+          CI: true
