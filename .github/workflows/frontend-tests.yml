@@ -10,16 +10,15 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest # ⚠ Slower and less reliable
+    runs-on: windows-latest
 
     steps:
+      - name: Enable Long Paths in Windows
+        shell: cmd
+        run: git config --system core.longpaths true
+
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Configure Windows Git
-        run: |
-          git config --global core.longpaths true
-          git config --global core.symlinks false
 
       - name: Install Node.js
         uses: actions/setup-node@v4
