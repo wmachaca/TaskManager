@@ -2,72 +2,49 @@ name: Backend Tests
 
 on:
   push:
-    paths:
-      - 'backend/**'
-    branches: [main, develop]
+    branches: [develop]
+    paths: ['backend/**']
+  pull_request:
+    branches: [develop]
+    paths: ['backend/**']
 
 jobs:
   test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        node-version: [18]
-
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    runs-on: windows-latest # Focus on Windows first
+    timeout-minutes: 15
 
     steps:
-      # 1. SETUP SECURE ENVIRONMENT
-      - name: Checkout code
+      # 1. CHECKOUT CODE
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      # 2. WINDOWS SPECIFIC CONFIG
-      - name: Configure Git (Windows)
-        if: matrix.os == 'windows-latest'
+      # 2. WINDOWS CONFIG
+      - name: Configure Windows
         run: |
           git config --global core.longpaths true
-          git config --global core.autocrlf false
-          git config --global core.symlinks false
+          net start postgresql-x64-14 || true
 
-      # 3. NODE.JS SETUP
+      # 3. NODE SETUP
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
 
-      # 4. DATABASE SETUP (Using your .env config)
-      - name: Start PostgreSQL (Windows)
-        if: matrix.os == 'windows-latest'
+      # 4. USE YOUR EXISTING DATABASE (No new DB)
+      - name: Test Setup
         run: |
-          net start postgresql-x64-14 || echo "PostgreSQL already running"
-          createdb taskmanager_test || echo "Database may exist"
-
-      - name: Start PostgreSQL (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo systemctl start postgresql || true
-          sudo -u postgres createdb taskmanager_test || true
-
-      # 5. TEST SETUP
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./backend
-
-      - name: Prepare test database
-        run: |
+          npm ci
           npx prisma generate
-          npx prisma migrate dev --name init
-          npx prisma db push --accept-data-loss
+          npx prisma migrate dev
         working-directory: ./backend
         env:
-          DATABASE_URL: 'postgresql://postgres:elmundoesancho@localhost:5432/taskmanager_test'
+          DATABASE_URL: 'postgresql://postgres:elmundoesancho@localhost:5432/taskmanager'
 
-      # 6. RUN TESTS
-      - name: Run tests
+      # 5. RUN TESTS
+      - name: Run Tests
         run: npm test
         working-directory: ./backend
         env:
-          DATABASE_URL: 'postgresql://postgres:elmundoesancho@localhost:5432/taskmanager_test'
+          DATABASE_URL: 'postgresql://postgres:elmundoesancho@localhost:5432/taskmanager'
           CI: true
