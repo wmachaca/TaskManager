@@ -10,12 +10,11 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest # Focus on Windows first
+    runs-on: windows-latest
     timeout-minutes: 15
 
     steps:
-      # 1. CHECKOUT CODE
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -24,29 +23,42 @@ jobs:
           sparse-checkout-cone-mode: false
           fetch-depth: 1
 
-      # 2. WINDOWS CONFIG
-      - name: Configure Windows
+      - name: Configure Windows Git settings
         run: |
           git config --global core.longpaths true
           git config --global core.symlinks false
-          net start postgresql-x64-14 || true
 
-      # 3. NODE SETUP
-      - uses: actions/setup-node@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
 
-      # 4. USE YOUR EXISTING DATABASE (No new DB)
-      - name: Test Setup
+      - name: Create Temporary .env File for Tests
         run: |
-          npm ci
-          npx prisma generate
-          npx prisma migrate dev
+          echo PORT=5000 > backend/.env.test
+          echo DATABASE_URL="postgresql://postgres:elmundoesancho@localhost:5432/taskmanager" >> backend/.env.test
+          echo JWT_SECRET=your_jwt_secret >> backend/.env.test
+          echo GOOGLE_CLIENT_ID=your_google_client_id >> backend/.env.test
+          echo GOOGLE_CLIENT_SECRET=your_google_client_secret >> backend/.env.test
+          echo GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback >> backend/.env.test
+          echo FRONTEND_URL=http://localhost:3000 >> backend/.env.test
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./backend
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+        working-directory: ./backend
+
+      - name: Apply database migrations
+        run: npx prisma migrate deploy
         working-directory: ./backend
         env:
           DATABASE_URL: 'postgresql://postgres:elmundoesancho@localhost:5432/taskmanager'
 
-      # 5. RUN TESTS
       - name: Run Tests
         run: npm test
         working-directory: ./backend
