@@ -4,9 +4,9 @@ on:
   pull_request:
     paths:
       - 'TaskManager/backend/**' # Solo se activa si hay cambios en backend
-    branches: -none # [main, develop]
-  push:
-    branches: -none # [main, develop] # Run tests when code is merged into these branches
+    branches: [main, develop] # -none
+  #push:
+  #  branches: -none # [main, develop] # Run tests when code is merged into these branches
 
 jobs:
   test:
