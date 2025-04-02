@@ -24,12 +24,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            frontend/
+            !frontend/node_modules/
+          sparse-checkout-cone-mode: false
 
       - name: Configure Git (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           git config --global core.longpaths true
           git config --global core.autocrlf input
+          git config --global core.symlinks false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
