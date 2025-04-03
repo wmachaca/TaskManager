@@ -37,7 +37,10 @@ function Navbar() {
           {user && (
             <div className="flex-1 text-center">
               <span className="text-gray-700 font-medium">
-                Welcome, <span className="text-indigo-600">{getDisplayName()}</span>
+                Welcome,{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 font-extrabold text-2xl hover:drop-shadow-[0_0_10px_rgba(99,102,241,0.5)] transition-all duration-300">
+                  {getDisplayName()}
+                </span>
               </span>
             </div>
           )}
