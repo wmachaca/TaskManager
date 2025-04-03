@@ -178,7 +178,7 @@ function TaskPage() {
   const allTasks = [...localTasks, ...backendTasks];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-100 to-blue-200 p-4 md:p-8 transition-all duration-300">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Task Manager</h1>
 
