@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import TaskRow from './TaskRow'; // Add this import
-
+import TaskRow from './TaskRow';
 // components/TaskTable.jsx
 export default function TaskTable({ tasks, deleteTask, updateTask }) {
   return (

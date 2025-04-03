@@ -54,16 +54,16 @@ function TaskList({ tasks, deleteTask, currentUserId, updateTask }) {
 TaskList.propTypes = {
   tasks: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired, // Assuming 'id' is a string, adjust accordingly
-      userId: PropTypes.string, // Assuming 'userId' is a string
-      status: PropTypes.oneOf(['IN_COURSE', 'FINISHED', 'STOPPED']).isRequired, // Validate possible status values
-      title: PropTypes.string.isRequired, // Assuming 'title' is a string
-      description: PropTypes.string, // Assuming 'description' is optional
+      id: PropTypes.string.isRequired,
+      userId: PropTypes.string,
+      status: PropTypes.oneOf(['IN_COURSE', 'FINISHED', 'STOPPED']).isRequired,
+      title: PropTypes.string.isRequired,
+      description: PropTypes.string,
     }),
   ).isRequired,
-  deleteTask: PropTypes.func.isRequired, // Assuming deleteTask is a function
-  currentUserId: PropTypes.string.isRequired, // Assuming currentUserId is a string
-  updateTask: PropTypes.func.isRequired, // Assuming updateTask is a function
+  deleteTask: PropTypes.func.isRequired,
+  currentUserId: PropTypes.string.isRequired,
+  updateTask: PropTypes.func.isRequired,
 };
 
 export default TaskList;

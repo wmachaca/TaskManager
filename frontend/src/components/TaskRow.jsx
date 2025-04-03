@@ -134,12 +134,12 @@ export default function TaskRow({ task, deleteTask, updateTask }) {
 
 TaskRow.propTypes = {
   task: PropTypes.shape({
-    id: PropTypes.string.isRequired, // Assuming task id is a string
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired, // Title is required and must be a string
     description: PropTypes.string, // Description is optional and must be a string
     status: PropTypes.oneOf(['IN_COURSE', 'FINISHED', 'STOPPED']).isRequired, // Status must be one of these values
     priority: PropTypes.oneOf(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).isRequired, // Priority must be one of these values
-    updatedAt: PropTypes.string, // Assuming updatedAt is a string in ISO format
+    updatedAt: PropTypes.string,
   }).isRequired,
   deleteTask: PropTypes.func.isRequired, // deleteTask must be a function
   updateTask: PropTypes.func.isRequired, // updateTask must be a function
