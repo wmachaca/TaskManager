@@ -165,8 +165,6 @@ function TaskPage() {
     }
   };
 
-  // Add this debug component function INSIDE your TaskPage component
-
   if (!user) {
     return (
       <div className="auth-message">

@@ -7,15 +7,9 @@ const taskRoutes = require('./routes/taskRoutes');
 require('dotenv').config();
 require('./config/passport'); //then move to src
 
-// Validate FRONTEND_URL on startup
-if (!process.env.FRONTEND_URL) {
-  console.error('FATAL: FRONTEND_URL is not defined in .env');
-  process.exit(1);
-}
-
 //only for specific origin
 const corsOptions = {
-  origin: process.env.FRONTEND_URL, // Allow requests only from this origin
+  origin: 'http://localhost:3000', // Allow requests only from this origin
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
 };
 
