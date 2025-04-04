@@ -10,7 +10,8 @@ require('./config/passport'); //then move to src
 //only for specific origin
 const corsOptions = {
   //origin: 'http://localhost:3000', // Allow requests only from this origin
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  //origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL,
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
 };
 

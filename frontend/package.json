@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "debug-env": "echo \"VITE_API_BASE_URL=$VITE_API_BASE_URL\" && npm run build"
   },
   "dependencies": {
     "axios": "^1.8.4",
