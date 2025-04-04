@@ -18,6 +18,8 @@ const corsOptions = {
 const authRoutes = require('./routes/authRoutes');
 const app = express();
 
+console.log('Loaded FRONTEND_URL:', process.env.FRONTEND_URL); // Log the FRONTEND_URL-for deploy
+
 app.use(express.json());
 //app.use(cors());//all origins
 app.use(cors(corsOptions)); //specific origins
