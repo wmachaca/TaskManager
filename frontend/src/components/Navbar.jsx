@@ -2,6 +2,8 @@ import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
+import CompanyLogo from '../assets/Untitled.jpg';
+
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
@@ -31,6 +33,15 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Left side - Empty for balance */}
+          <div className="flex items-center flex-shrink-0">
+            <div className="flex items-center">
+              <img
+                src={CompanyLogo}
+                alt="Company Logo"
+                className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md"
+              />
+            </div>
+          </div>
           <div className="flex-1"></div>
 
           {/* Center - Welcome message (only when logged in) */}
