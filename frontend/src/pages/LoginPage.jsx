@@ -1,15 +1,52 @@
-import { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useContext, useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 function LoginPage() {
-  const { login } = useContext(AuthContext);
+  const { user, login, loginWithGoogle } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Handle Google OAuth callback when returning with token
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      handleGoogleCallback(token);
+    }
+  }, [searchParams]);
+
+  const handleGoogleCallback = async token => {
+    try {
+      setGoogleLoading(true);
+      // Store the token (in context, localStorage, etc.)
+      const result = await loginWithGoogle(token); // ✅ cleaner usage
+      if (!result.success) {
+        throw new Error(result.message || 'Google login failed');
+      }
+    } catch (err) {
+      setError('Failed to authenticate with Google: ' + err.message);
+      // Optional: redirect to login page
+      navigate('/login');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  // Add this useEffect to handle redirect when user is authenticated
+  useEffect(() => {
+    if (user) {
+      // Clear the token from URL for security
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+      navigate('/tasks');
+    }
+  }, [user, navigate]); //check this later
 
   const handleLogin = async e => {
     e.preventDefault();
@@ -57,9 +94,11 @@ function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
+    setGoogleLoading(true);
+    setError('');
     //const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
     const baseURL = import.meta.env.VITE_API_BASE_URL;
-    window.location.href = `${baseURL}/auth/google`;
+    window.location.href = `${baseURL}/api/auth/google`;
   };
 
   return (
@@ -110,6 +149,12 @@ function LoginPage() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+
+        <div className="flex items-center my-6">
+          <div className="flex-1 border-t border-gray-300"></div>
+          <span className="px-3 text-gray-500">or</span>
+          <div className="flex-1 border-t border-gray-300"></div>
+        </div>
 
         <div className="mt-6">
           <button

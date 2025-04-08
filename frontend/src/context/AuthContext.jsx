@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
 import apiClient from '../utils/apiClient';
 import { jwtDecode } from 'jwt-decode';
@@ -7,7 +7,42 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(() => {
+    // Initialize from localStorage only once
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      try {
+        const decoded = jwtDecode(storedToken);
+        return storedToken;
+      } catch {
+        localStorage.removeItem('token');
+        return null;
+      }
+    }
+    return null;
+  });
+
+  // Enhanced setAuthToken with immediate user update
+  const setAuthToken = useCallback(newToken => {
+    try {
+      const decoded = jwtDecode(newToken);
+      console.log('Decoded Google token:', decoded);
+
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      setUser({
+        userId: decoded.userId,
+        name: decoded.name,
+        email: decoded.email,
+        provider: decoded.provider || 'google',
+      });
+      return true;
+    } catch (error) {
+      console.error('Invalid token:', error);
+      logout();
+      return false;
+    }
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -29,10 +64,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const res = await apiClient.post('/api/auth/login', { email, password });
-
-      localStorage.setItem('token', res.data.token);
-      setToken(res.data.token);
-      setUser(jwtDecode(res.data.token));
+      setAuthToken(res.data.token);
       return { success: true }; //
     } catch (error) {
       console.error('Login error:', error.response?.data?.message || error.message);
@@ -44,13 +76,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async googleCredential => {
+    try {
+      const res = await apiClient.post('/api/auth/google', { token: googleCredential });
+      const jwtToken = res.data.token; // this must be your own JWT with userId
+      const success = setAuthToken(jwtToken); // this already updates user/token
+      return { success };
+    } catch (error) {
+      console.error('Google login failed:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Google login failed',
+      };
+    }
+  };
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
     setToken(null);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{ user, token, login, logout, setAuthToken, loginWithGoogle, isAuthenticated: !!user }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 AuthProvider.propTypes = {
