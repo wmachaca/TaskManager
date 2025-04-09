@@ -64,7 +64,11 @@ const strategy = new GoogleStrategy(
 );
 
 if (agent) {
+  // Only set proxy agent if needed (Linux behind proxy)
   strategy._oauth2.setAgent(agent);
+  console.log('Using proxy agent for Google OAuth');
+} else {
+  console.log('No proxy detected — running without agent');
 }
 
 passport.use(strategy);
