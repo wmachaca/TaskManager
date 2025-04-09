@@ -12,7 +12,8 @@ model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
-  password  String?   // Hashed password
+  password  String?   
+  salt      String?   
   provider  String  @default("credentials") // "credentials" or "google"
   googleId  String?  @unique
   tasks     Task[]    

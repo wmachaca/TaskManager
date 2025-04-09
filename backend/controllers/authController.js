@@ -1,4 +1,5 @@
-const bcrypt = require('bcryptjs');
+//const bcrypt = require('bcryptjs');
+const { hashPassword, verifyPassword } = require('../utils/password');
 const jwt = require('jsonwebtoken');
 const { prisma } = require('../models/index'); // my database is in models.. future ../config/db
 const Joi = require('joi');
@@ -33,10 +34,16 @@ exports.register = async (req, res) => {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const { hash, salt } = await hashPassword(password);
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, provider: 'credentials' },
+      data: {
+        name,
+        email,
+        password: hash,
+        salt, // Store the salt
+        provider: 'credentials',
+      },
     });
 
     const token = jwt.sign(
@@ -66,9 +73,16 @@ exports.login = async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.password) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!user || !user.password || !user.salt) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await verifyPassword({
+      candidatePassword: password,
+      hash: user.password,
+      salt: user.salt,
+    });
+
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign(
