@@ -1,11 +1,11 @@
 const express = require('express');
+const passport = require('./config/passport');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const taskRoutes = require('./routes/taskRoutes');
 
 require('dotenv').config();
-require('./config/passport'); //then move to src
 
 //only for specific origin
 const corsOptions = {
@@ -21,6 +21,7 @@ const app = express();
 console.log('Loaded FRONTEND_URL:', process.env.FRONTEND_URL); // Log the FRONTEND_URL-for deploy
 
 app.use(express.json());
+app.use(passport.initialize());
 //app.use(cors());//all origins
 app.use(cors(corsOptions)); //specific origins
 app.use(helmet());

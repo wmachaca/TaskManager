@@ -90,22 +90,54 @@ exports.login = async (req, res) => {
 
 // 🚀 Google Auth Callback
 exports.googleAuth = (req, res) => {
-  const token = jwt.sign(
-    {
-      userId: req.user.id,
-      name: req.user.name,
-      email: req.user.email,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiration
-    },
-    JWT_SECRET,
-  );
-  // Use FRONTEND_URL from .env
-  const frontendUrl = process.env.FRONTEND_URL;
-  if (!frontendUrl) {
-    console.error('FATAL: FRONTEND_URL is not defined in .env');
-    return res.status(500).json({ message: 'Server misconfiguration' });
-  }
+  try {
+    // Verify we have a valid user object
+    if (!req.user || !req.user.id) {
+      console.error('GoogleAuth: Invalid user object', req.user);
+      throw new Error('Invalid user data from Google authentication');
+    }
 
-  res.redirect(`${frontendUrl}?token=${token}`);
+    // Create JWT token with additional useful claims
+    const token = jwt.sign(
+      {
+        userId: req.user.id,
+        name: req.user.name,
+        email: req.user.email,
+        provider: req.user.provider || 'google', // Include auth provider
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 3600, // 24 hour expiration
+      },
+      JWT_SECRET,
+      { algorithm: 'HS256' }, // Explicit algorithm
+    );
+
+    // Validate frontend URL
+    const frontendUrl = process.env.FRONTEND_URL;
+    if (!frontendUrl) {
+      console.error('FATAL: FRONTEND_URL is not defined in .env');
+      return res.status(500).json({ message: 'Server misconfiguration' });
+    }
+
+    // Construct redirect URL with additional safety checks
+    const redirectUrl = new URL(`${frontendUrl}/tasks`);
+    redirectUrl.searchParams.set('token', token);
+
+    // Add secure cookie with HttpOnly flag (optional but recommended)
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 3600 * 1000, // 24 hours
+    });
+
+    // Perform the redirect
+    console.log(`Redirecting to: ${redirectUrl.toString()}`);
+    return res.redirect(redirectUrl.toString());
+  } catch (error) {
+    console.error('GoogleAuth error:', error);
+    return res.status(500).json({
+      message: 'Authentication failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
 };
