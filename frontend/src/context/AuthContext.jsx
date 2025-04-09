@@ -45,6 +45,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    // First: Check for token in URL (Google redirect case)
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+
+    if (urlToken) {
+      // If we have a token in URL, use it and clean the URL
+      setAuthToken(urlToken);
+      window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+
+    // Second: Handle existing token from localStorage
     if (token) {
       try {
         const decoded = jwtDecode(token);
