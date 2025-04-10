@@ -25,6 +25,6 @@ Thumbs.db
 # IDE-specific files
 .idea/
 
-# Package-lock and yarn lock (optional)
+# Package-lock and yarn lock
 package-lock.json
 yarn.lock
