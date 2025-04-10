@@ -1,13 +1,26 @@
+# Dependencies
 node_modules/
+
+# Environment
 .env
-.env.local
-.env.*.local
+/prisma/.env
+
+# Logs & runtime
 *.log
 *.pid
+
+# Build outputs
 dist/
-.DS_Store
-.vscode/
-.idea/
-/prisma/.env
+build/ 
+
+# Prisma
 /prisma/migrations/
-!/prisma/migrations/migration_lock.toml
+!/prisma/migrations/migration_lock.toml  # Required for Prisma
+
+# Editors
+
+# OS files
+.DS_Store
+
+# IDE (JetBrains)
+.idea/

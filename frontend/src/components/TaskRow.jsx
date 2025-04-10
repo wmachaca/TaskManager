@@ -154,7 +154,7 @@ export default function TaskRow({
               title="Permanently delete"
             >
               <TrashIcon className="h-5 w-5 mr-1" />
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? 'Deleting...' : 'Permanent Delete'}
             </button>
           </>
         ) : (
