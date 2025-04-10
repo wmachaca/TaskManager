@@ -311,8 +311,8 @@ function TaskPage() {
         {/* Layout Wrapper */}
         {showDeleted ? (
           // 🔴 Deleted Task View
-          <div className="lg:w-2/3 w-full">
-            <div className="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+          <div className="flex justify-center w-full px-4">
+            <div className="bg-white p-6 rounded-xl shadow-md overflow-auto">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Deleted Tasks</h2>
               {deletedTasks.length === 0 ? (
                 <p className="text-gray-500">No deleted tasks found</p>
@@ -332,8 +332,8 @@ function TaskPage() {
           // ✅ Active Task View
           <div className="flex flex-col lg:flex-row gap-6 w-full">
             {/* Left - Add Task */}
-            <div className="lg:w-1/3 w-full flex-shrink-0">
-              <div className="bg-white p-6 rounded-xl shadow-md sticky top-4">
+            <div className="lg:w-1/3 w-full px-4">
+              <div className="bg-white p-6 rounded-xl shadow-md lg:sticky lg:top-4 mx-auto max-w-md">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Task</h2>
                 <AddTask addTask={addTask} />
               </div>
@@ -341,7 +341,7 @@ function TaskPage() {
 
             {/* Right - Task List */}
             <div className="lg:w-2/3 w-full">
-              <div className="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+              <div className="bg-white p-6 rounded-xl shadow-md overflow-auto">
                 <TaskList
                   tasks={allTasks}
                   deleteTask={deleteTask}
