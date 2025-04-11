@@ -1,4 +1,4 @@
-const { prisma } = require('../models');
+const { prisma } = require('../prisma/models/index');
 
 exports.getTasks = async (req, res) => {
   try {

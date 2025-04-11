@@ -11,9 +11,8 @@ async function hashPassword(password) {
   return { hash, salt };
 }
 
-async function verifyPassword({ candidatePassword, hash, salt }) {
-  const candidateHash = await bcrypt.hash(candidatePassword, salt);
-  return candidateHash === hash;
+async function verifyPassword(candidatePassword, hash) {
+  return await bcrypt.compare(candidatePassword, hash);
 }
 
 module.exports = {

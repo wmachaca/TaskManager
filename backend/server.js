@@ -4,6 +4,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const taskRoutes = require('./routes/taskRoutes');
+const authRoutes = require('./routes/authRoutes');
+const { filterAuthData } = require('./middleware/security');
 
 require('dotenv').config();
 
@@ -15,7 +17,6 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
 };
 
-const authRoutes = require('./routes/authRoutes');
 const app = express();
 
 console.log('Loaded FRONTEND_URL:', process.env.FRONTEND_URL); // Log the FRONTEND_URL-for deploy
@@ -26,6 +27,8 @@ app.use(passport.initialize());
 app.use(cors(corsOptions)); //specific origins
 app.use(helmet());
 app.use(morgan('dev'));
+
+app.use(filterAuthData());
 
 app.use('/api/tasks', taskRoutes);
 app.use('/api/auth', authRoutes);

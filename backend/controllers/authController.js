@@ -1,8 +1,9 @@
 //const bcrypt = require('bcryptjs');
 const { hashPassword, verifyPassword } = require('../utils/password');
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../models/index'); // my database is in models.. future ../config/db
+const { prisma } = require('../prisma/models/index'); // my database is in models.. future ../config/db
 const Joi = require('joi');
+const { PUBLIC_USER_FIELDS, sanitizeUser } = require('../utils/authUtils');
 
 // Test connection immediately
 prisma
@@ -40,10 +41,15 @@ exports.register = async (req, res) => {
       data: {
         name,
         email,
-        password: hash,
-        salt, // Store the salt
         provider: 'credentials',
+        auth: {
+          create: {
+            password: hash,
+            salt,
+          },
+        },
       },
+      select: PUBLIC_USER_FIELDS,
     });
 
     const token = jwt.sign(
@@ -57,7 +63,7 @@ exports.register = async (req, res) => {
       JWT_SECRET,
     );
 
-    res.json({ token, userId: user.id, name: user.name });
+    res.json({ token, user }); //  res.json({ token, userId: user.id, name: user.name });
   } catch (error) {
     console.error('Registration Error Details:', error);
     res.status(500).json({
@@ -72,23 +78,21 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.password || !user.salt) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { auth: true },
+    });
+
+    if (!user?.auth) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const isMatch = await verifyPassword({
-      candidatePassword: password,
-      hash: user.password,
-      salt: user.salt,
-    });
-
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    const isValid = await verifyPassword(password, user.auth.password);
+    if (!isValid) return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign(
       {
         userId: user.id,
-        name: user.name,
         email: user.email,
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiration
@@ -96,7 +100,7 @@ exports.login = async (req, res) => {
       JWT_SECRET,
     );
 
-    res.json({ token, userId: user.id, name: user.name });
+    res.json({ token, user: sanitizeUser(user) }); //    res.json({ token, userId: user.id, name: user.name });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
