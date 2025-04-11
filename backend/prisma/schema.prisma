@@ -12,13 +12,24 @@ model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
-  password  String?   
-  salt      String?   
   provider  String  @default("credentials") // "credentials" or "google"
   googleId  String?  @unique
   tasks     Task[]    
+  auth      UserAuth? @relation(fields: [authId], references: [id])
+  authId    Int?      @unique  
   createdAt DateTime @default(now())  
 }
+
+
+model UserAuth {
+  id       Int     @id @default(autoincrement())
+  user     User?
+  password String?   // Nullable for OAuth users
+  salt     String?
+  resetToken String? // For password reset flows
+  resetTokenExpiry DateTime?
+}
+
 
 model Task {
   id          Int      @id @default(autoincrement())

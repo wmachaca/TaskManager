@@ -54,7 +54,6 @@ const strategy = new GoogleStrategy(
             email,
             googleId: id,
             provider: 'google',
-            password: null,
           },
         });
       } else if (user.provider === 'credentials') {
