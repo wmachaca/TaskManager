@@ -1,6 +1,6 @@
 // middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../models');
+const { prisma } = require('../prisma/models/index');
 
 module.exports = async (req, res, next) => {
   try {

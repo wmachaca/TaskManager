@@ -2,7 +2,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const { prisma } = require('../models/index'); // it is in ./models/index.js ... ./db for future
+const { prisma } = require('../prisma/models/index'); // it is in ./models/index.js ... ./db for future
 const jwt = require('jsonwebtoken');
 
 require('dotenv').config();

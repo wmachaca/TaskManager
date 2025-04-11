@@ -1,7 +1,7 @@
 //const bcrypt = require('bcryptjs');
 const { hashPassword, verifyPassword } = require('../utils/password');
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../models/index'); // my database is in models.. future ../config/db
+const { prisma } = require('../prisma/models/index'); // my database is in models.. future ../config/db
 const Joi = require('joi');
 
 // Test connection immediately
