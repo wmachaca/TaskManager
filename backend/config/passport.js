@@ -2,16 +2,29 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const { HttpsProxyAgent } = require('https-proxy-agent');
-const proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
-const agent = proxy ? new HttpsProxyAgent(proxy) : null;
-
 const { prisma } = require('../models/index'); // it is in ./models/index.js ... ./db for future
 const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
+
+let agent = null;
+const proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
+
+if (proxy) {
+  try {
+    const { HttpsProxyAgent } = require('https-proxy-agent');
+    agent = new HttpsProxyAgent(proxy);
+    console.log('Using proxy agent for Google OAuth');
+  } catch (err) {
+    console.error(
+      'Proxy is set but https-proxy-agent is not installed. Run `npm install https-proxy-agent` if needed.',
+    );
+  }
+} else {
+  console.log('No proxy detected — running without agent');
+}
 
 const options = {
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -66,9 +79,6 @@ const strategy = new GoogleStrategy(
 if (agent) {
   // Only set proxy agent if needed (Linux behind proxy)
   strategy._oauth2.setAgent(agent);
-  console.log('Using proxy agent for Google OAuth');
-} else {
-  console.log('No proxy detected — running without agent');
 }
 
 passport.use(strategy);
