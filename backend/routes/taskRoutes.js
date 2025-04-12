@@ -8,7 +8,7 @@ const {
   getDeletedTasks,
   restoreTask,
   permanentDeleteTask,
-} = require('../controllers/taskController');
+} = require('../controllers/tasks/index');
 const validateTaskMiddleware = require('../middleware/validateTask');
 const authMiddleware = require('../middleware/authMiddleware');
 
