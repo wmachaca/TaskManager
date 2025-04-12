@@ -1,11 +1,11 @@
 const express = require('express');
 const passport = require('passport');
-const authController = require('../controllers/authController');
+const { registerUser, loginUser, googleAuth } = require('../controllers/auth/index');
 
 const router = express.Router();
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/register', registerUser);
+router.post('/login', loginUser);
 
 // Google authentication routes
 router.get(
@@ -21,7 +21,7 @@ router.get(
     failureRedirect: '/login', // Or your frontend login page
     session: false,
   }),
-  authController.googleAuth,
+  googleAuth,
 );
 
 module.exports = router;
