@@ -1,8 +1,8 @@
-const { hashPassword } = require('../../utils/password');
+const { hashPassword } = require('../../../utils/password');
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../../prisma/models/index');
+const { prisma } = require('../../../database/client');
 const Joi = require('joi');
-const { PUBLIC_USER_FIELDS } = require('../../utils/authUtils');
+const { PUBLIC_USER_FIELDS } = require('../../../utils/authUtils');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {

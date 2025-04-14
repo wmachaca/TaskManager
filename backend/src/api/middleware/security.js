@@ -1,5 +1,5 @@
 // middleware/security.js
-const { sanitizeUser } = require('../utils/authUtils');
+const { sanitizeUser } = require('../../utils/authUtils');
 
 function filterAuthData() {
   return (req, res, next) => {

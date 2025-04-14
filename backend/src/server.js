@@ -3,9 +3,9 @@ const passport = require('./config/passport');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const taskRoutes = require('./routes/taskRoutes');
-const authRoutes = require('./routes/authRoutes');
-const { filterAuthData } = require('./middleware/security');
+const taskRoutes = require('./api/routes/taskRoutes');
+const authRoutes = require('./api/routes/authRoutes');
+const { filterAuthData } = require('./api/middleware/security');
 
 require('dotenv').config();
 
