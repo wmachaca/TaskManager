@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/ 
+
+# Logs
+npm-debug.log*
+yarn-debug.log
+yarn-error.log
+
+
+# Build & Output
+dist/          # Production build (Vite/Webpack)
+build/         # Alternative build folder (Create React App)
+.cache/        # Build cache (Vite, Parcel)
+.temp/         # Temporary files
+
+
+# Environment
+.env           # Default environment file
+
+
+# Editor & IDE
+
+# Testing
+coverage/      # Test coverage reports
+__snapshots__/ # Jest/Vitest snapshots
+
+# OS & Misc
+.DS_Store      # macOS metadata
+Thumbs.db      # Windows thumbnail cache
+*.tmp          # Temporary files
+
+# Package-lock
+package-lock.json
