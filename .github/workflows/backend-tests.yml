@@ -89,6 +89,3 @@ jobs:
         env:
           DATABASE_URL: 'postgresql://testuser:passpostgres@localhost:5432/taskmanager_test?schema=public'
           CI: 'true'
-      - name: Debug database tables
-        run: |
-          psql -U testuser -d taskmanager_test -c "\dt"

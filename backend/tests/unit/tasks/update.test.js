@@ -58,7 +58,7 @@ describe('PUT /api/tasks/:id - Task Updates', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send({ status: 'INVALID_STATUS' });
 
-    // Restore console.error
+    // Restore console.error: mock
     console.error = originalConsoleError;
 
     expect(response.status).toBe(400);
