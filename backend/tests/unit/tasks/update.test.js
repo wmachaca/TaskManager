@@ -48,10 +48,18 @@ describe('PUT /api/tasks/:id - Task Updates', () => {
   });
 
   test('should fail with invalid status', async () => {
+    // Store original console.error
+    const originalConsoleError = console.error;
+
+    // Mock console.error to suppress Prisma's validation error
+    console.error = jest.fn();
     const response = await request(app)
       .put(`/api/tasks/${testTask.id}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send({ status: 'INVALID_STATUS' });
+
+    // Restore console.error
+    console.error = originalConsoleError;
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
