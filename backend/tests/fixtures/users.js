@@ -3,6 +3,17 @@ const bcrypt = require('bcryptjs');
 const SALT_ROUNDS = 10;
 
 module.exports = {
+  registration: {
+    valid: {
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'TestPass123!',
+    },
+    invalid: {
+      email: 'bad-email',
+      password: '123',
+    },
+  },
   validUser: {
     name: 'Test User',
     email: 'test@example.com',
@@ -16,12 +27,5 @@ module.exports = {
   invalidUser: {
     email: 'invalid-email',
     password: '123',
-  },
-
-  googleUser: {
-    name: 'Google user',
-    email: 'google@example.com',
-    provider: 'google',
-    googleId: '123456789',
   },
 };

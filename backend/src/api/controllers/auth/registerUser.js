@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
       JWT_SECRET,
     );
 
-    res.json({ token, user });
+    res.status(201).json({ token, user }); //res.json({ token, user });
   } catch (error) {
     console.error('Registration Error Details:', error);
     res.status(500).json({

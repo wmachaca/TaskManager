@@ -5,6 +5,10 @@ module.exports = async (req, res) => {
     const { id } = req.params;
     const { title, description, status, priority, dueDate } = req.body;
 
+    // Validate title if provided
+    if (title !== undefined && title.trim() === '') {
+      return res.status(400).json({ error: 'Title cannot be empty' });
+    }
     // First verify task exists and belongs to user
     const task = await prisma.task.findUnique({
       where: {

@@ -3,9 +3,11 @@ const app = require('../../../src/server');
 const { cleanDatabase, createTestUser, fixtures } = require('../../setup');
 
 describe('POST /api/auth/login', () => {
+  let testUser;
   beforeAll(async () => {
     await cleanDatabase();
-    await createTestUser();
+    testUser = await createTestUser();
+    console.log('Created test user:', testUser.id);
   });
 
   afterAll(async () => {
@@ -15,18 +17,25 @@ describe('POST /api/auth/login', () => {
   test('should authenticate with valid credentials', async () => {
     const response = await request(app).post('/api/auth/login').send({
       email: fixtures.users.validUser.email,
-      password: fixtures.users.validUser.auth.password,
+      password: 'testpassword',
     });
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('token');
-    expect(response.body).toHaveProperty('user');
+    expect(response.body).toMatchObject({
+      token: expect.any(String),
+      user: {
+        id: testUser.id,
+        email: fixtures.users.validUser.email,
+      },
+    });
   });
 
   test('should fail with invalid credentials', async () => {
     const response = await request(app).post('/api/auth/login').send(fixtures.users.invalidUser);
 
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('message');
+    expect(response.body).toEqual({
+      message: expect.stringContaining('Invalid credentials'),
+    });
   });
 });

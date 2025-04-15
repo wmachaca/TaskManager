@@ -36,6 +36,7 @@ const getAuthToken = async app => {
 };
 
 module.exports = {
+  prisma,
   cleanDatabase,
   createTestUser,
   getAuthToken,
