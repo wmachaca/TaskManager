@@ -1,8 +1,8 @@
-const { hashPassword } = require('../../utils/password');
+const { hashPassword } = require('../../../utils/password');
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../../prisma/models/index');
+const { prisma } = require('../../../database/client');
 const Joi = require('joi');
-const { PUBLIC_USER_FIELDS } = require('../../utils/authUtils');
+const { PUBLIC_USER_FIELDS } = require('../../../utils/authUtils');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
       JWT_SECRET,
     );
 
-    res.json({ token, user });
+    res.status(201).json({ token, user }); //res.json({ token, user });
   } catch (error) {
     console.error('Registration Error Details:', error);
     res.status(500).json({

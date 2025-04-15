@@ -1,4 +1,4 @@
-// /prisma/models/index.js
+// /database/client.js
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
