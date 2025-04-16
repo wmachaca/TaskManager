@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       try {
-        const decoded = jwtDecode(storedToken);
+        jwtDecode(storedToken); // decoded used in useEffect
         return storedToken;
       } catch {
         localStorage.removeItem('token');
