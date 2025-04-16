@@ -8,5 +8,5 @@ export default defineConfig({
     environment: 'jsdom', // Use jsdom for DOM-related testing (like React)
     setupFiles: './vite.setup.js', // Optionally include your setup file if needed
   },
-  server: { port: 3000 },
+  server: { port: process.env.PORT || 3000 },
 });

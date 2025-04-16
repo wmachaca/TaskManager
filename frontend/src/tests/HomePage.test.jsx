@@ -34,4 +34,9 @@ describe('HomePage Component', () => {
     expect(screen.getByText(/Login/i)).toBeInTheDocument();
     expect(screen.getByText(/Register/i)).toBeInTheDocument();
   });
+
+  // Check if VITE_API_BASE_URL is correct
+  test('uses the correct API base URL from environment', () => {
+    expect(import.meta.env.VITE_API_BASE_URL).toBe('http://localhost:5000/test');
+  });
 });
