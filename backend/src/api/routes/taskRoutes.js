@@ -17,7 +17,7 @@ const router = express.Router();
 // Apply authMiddleware to ALL task routes
 router.use(authMiddleware);
 router.get('/', getTasks);
-router.post('/', [...validateTaskMiddleware], createTask);
+router.post('/', validateTaskMiddleware, createTask);
 router.post('/sync', syncTasks);
 router.put('/:id', updateTask);
 router.delete('/:id', deleteTask);
