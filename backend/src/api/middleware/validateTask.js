@@ -1,45 +1,30 @@
-const { body, validationResult } = require('express-validator');
-const taskValidationRules = [
-  body('title')
-    .trim()
-    .notEmpty()
-    .withMessage('Title is required')
-    .isLength({ max: 100 })
-    .withMessage('Title must be less than 100 characters'),
+const Joi = require('joi');
 
-  body('description')
-    .optional()
-    .trim()
-    .isLength({ max: 500 })
-    .withMessage('Description must be less than 500 characters'),
+const taskValidationSchema = Joi.object({
+  title: Joi.string().required().max(100).messages({
+    'string.empty': 'The title is required.',
+    'string.max': 'The title cannot exceed 100 characters.',
+  }),
+  description: Joi.string().optional().max(500).messages({
+    'string.max': 'The description cannot exceed 500 characters.',
+  }),
+  status: Joi.string().valid('IN_COURSE', 'FINISHED', 'STOPPED').optional().messages({
+    'any.only': 'The status must be IN_COURSE, FINISHED, or STOPPED.',
+  }),
+  priority: Joi.string().valid('LOW', 'MEDIUM', 'HIGH', 'CRITICAL').optional().messages({
+    'any.only': 'The priority must be LOW, MEDIUM, HIGH, or CRITICAL.',
+  }),
+  dueDate: Joi.date().optional().messages({
+    'date.base': 'The date must be valid.',
+  }),
+});
 
-  body('status')
-    .optional()
-    .isIn(['IN_COURSE', 'FINISHED', 'STOPPED'])
-    .withMessage('Invalid status'),
-
-  body('priority')
-    .optional()
-    .isIn(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'])
-    .withMessage('Invalid priority'),
-
-  body('dueDate').optional().isISO8601().withMessage('Invalid date format').toDate(),
-
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
-];
-
-const validate = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+module.exports = (req, res, next) => {
+  const { error } = taskValidationSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    return res.status(400).json({
+      errors: error.details.map(detail => detail.message),
+    });
   }
   next();
 };
-
-module.exports = [...taskValidationRules, validate];
