@@ -8,6 +8,7 @@ async function hashPassword(password) {
   const hash = await bcrypt.hash(password, salt);
   console.log('Generated Salt:', salt); // Debug log
   console.log('Generated Hash:', hash);
+
   return { hash, salt };
 }
 
