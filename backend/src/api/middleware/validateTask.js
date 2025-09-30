@@ -5,7 +5,7 @@ const taskValidationSchema = Joi.object({
     'string.empty': 'The title is required.',
     'string.max': 'The title cannot exceed 100 characters.',
   }),
-  description: Joi.string().optional().max(500).messages({
+  description: Joi.string().optional().max(500).allow('').messages({
     'string.max': 'The description cannot exceed 500 characters.',
   }),
   status: Joi.string().valid('IN_COURSE', 'FINISHED', 'STOPPED').optional().messages({
@@ -14,7 +14,7 @@ const taskValidationSchema = Joi.object({
   priority: Joi.string().valid('LOW', 'MEDIUM', 'HIGH', 'CRITICAL').optional().messages({
     'any.only': 'The priority must be LOW, MEDIUM, HIGH, or CRITICAL.',
   }),
-  dueDate: Joi.date().optional().messages({
+  dueDate: Joi.date().optional().allow(null).messages({
     'date.base': 'The date must be valid.',
   }),
 });
@@ -22,6 +22,7 @@ const taskValidationSchema = Joi.object({
 module.exports = (req, res, next) => {
   const { error } = taskValidationSchema.validate(req.body, { abortEarly: false });
   if (error) {
+    console.error('Validation errors:', error.details); // Log validation errors
     return res.status(400).json({
       errors: error.details.map(detail => detail.message),
     });

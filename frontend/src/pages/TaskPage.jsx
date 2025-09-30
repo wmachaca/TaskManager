@@ -103,13 +103,14 @@ function TaskPage() {
     }
 
     const newTask = {
-      id: Date.now(),
       title: taskData.title,
-      description: taskData.description || '',
-      status: 'IN_COURSE',
-      priority: taskData.priority || 'MEDIUM',
-      userId: user.userId,
+      description: taskData.description || '', // Ensure description is a string
+      status: 'IN_COURSE', // Default status
+      priority: taskData.priority || 'MEDIUM', // Default priority
+      dueDate: taskData.dueDate || null, // Ensure dueDate is null if not provided
     };
+
+    console.log('Payload being sent to backend:', newTask); // Log the payload
 
     if (isOnline) {
       apiClient
@@ -117,16 +118,22 @@ function TaskPage() {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
         .then(response => {
-          setBackendTasks([...backendTasks, response.data]);
+          setBackendTasks([...backendTasks, response.data]); // Use the backend-generated task
           setError(null);
         })
         .catch(error => {
           console.error('Error adding task:', error);
-          setError('Error adding task. Please try again later.');
+          if (error.response?.data?.errors) {
+            setError(error.response.data.errors.join(', ')); // Display validation errors
+          } else {
+            setError('Error adding task. Please try again later.');
+          }
         });
     } else {
-      setLocalTasks([...localTasks, newTask]);
-      setPendingSyncTasks([...pendingSyncTasks, newTask]);
+      // For offline mode, you can still use a temporary ID for local tasks
+      const tempTask = { ...newTask, id: Date.now() }; // Temporary ID for local use
+      setLocalTasks([...localTasks, tempTask]);
+      setPendingSyncTasks([...pendingSyncTasks, tempTask]);
     }
   };
 
