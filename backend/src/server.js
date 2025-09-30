@@ -7,6 +7,7 @@ const taskRoutes = require('./api/routes/taskRoutes');
 const authRoutes = require('./api/routes/authRoutes');
 const { filterAuthData } = require('./api/middleware/security');
 const rateLimit = require('express-rate-limit');
+const { prisma } = require('./database/client'); // Import Prisma client
 
 require('dotenv').config();
 
@@ -38,6 +39,17 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(filterAuthData());
+
+// Database connection check
+app.get('/api/test-db', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`; // Simple query to test connection
+    res.json({ message: 'Database connected successfully' });
+  } catch (error) {
+    console.error('Database connection error:', error); // Log the error for debugging
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 //Routes
 app.use('/api/tasks', taskRoutes);
