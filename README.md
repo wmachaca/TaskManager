@@ -2,44 +2,45 @@
 
 Task Manager is a full-stack application for managing tasks with features like user authentication, task creation, updates, and deletion. It is built with **Node.js**, **PostgreSQL**, **React**, and **Prisma ORM**.
 
+🔗 Live Demo (Frontend): taskmanagerfrontwima.netlify.app
+
 ---
 
 ## Features
 
-- **Backend**: RESTful API with Node.js, Express, and PostgreSQL.
-- **Frontend**: React-based user interface with Vite for development.
-- **Authentication**: Secure user authentication with JWT and Google OAuth.
-- **Task Management**: CRUD operations for tasks with validation and soft delete functionality.
+- **Backend**: RESTful API with Node.js, Express, PostgreSQL and Prisma.
+- **Frontend**: React (Vite) UI.
+- **Authentication**: JWT + Google OAuth2.
+- **Task Management**: CRUD with validation & soft delete.
 - **Testing**: Unit tests for backend endpoints.
-- **Security**: Rate limiting, password hashing, and centralized error handling.
+- **Security**: Password hashing, rate limiting, centralized error handling
 
 ---
 
-## Prerequisites
+## 🚀 Installation & Usage
 
-- **Node.js**: `v22.14.0` (use `.nvmrc` for version management)
-- **PostgreSQL**: Ensure PostgreSQL is installed and running locally.
+### Prerequisites
+
+- **Node.js**: `v22.14.0` (use `.nvmrc` for version management).
+- **PostgreSQL**: PostgreSQL 15+.
 - **NPM**: Comes with Node.js.
+- **Test database user:** `testuser` (create with: `CREATE USER testuser WITH PASSWORD 'yourpassword'`)
 
----
-
-## 1. Clone and Setup
+### 1. Clone and Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/task-manager.git
-cd task-manager
+git clone https://github.com/wmachaca/TaskManager.git
+cd TaskManager
 
 # Copy environment variables
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 ```
 
----
+### 2. Initialize Databases
 
-## 2. Initialize Databases
-
-### Development Database
+#### Development Database
 
 ```bash
 # Navigate to the backend folder
@@ -52,7 +53,7 @@ npm install
 npx prisma migrate dev
 ```
 
-### Test Database (One-Time Setup)
+#### Test Database (One-Time Setup)
 
 ```bash
 # Create the test database
@@ -62,20 +63,12 @@ psql -U postgres -h localhost -c "CREATE DATABASE taskmanager_test WITH OWNER te
 DATABASE_URL=postgresql://testuser:yourpassword@localhost:5432/taskmanager_test npx prisma migrate deploy
 ```
 
----
-
-## 3. Start Development Servers
-
-### Backend
+### 3. Start Development Servers
 
 ```bash
 # Start the backend server
 npm run dev
-```
 
-### Frontend
-
-```bash
 # Navigate to the frontend folder
 cd ../frontend
 
@@ -86,11 +79,7 @@ npm install
 npm run dev
 ```
 
----
-
-## 4. Testing
-
-### Backend Tests
+### 4. Testing
 
 ```bash
 # Navigate to the backend folder
@@ -102,7 +91,7 @@ npm test
 
 ---
 
-## 5. Folder Structure
+## 📂 Project Structure
 
 ### Backend
 
@@ -123,7 +112,7 @@ npm test
 
 ---
 
-## 6. Environment Variables
+## 🔑 Environment Variables
 
 ### Backend `.env`
 
@@ -144,36 +133,13 @@ VITE_API_BASE_URL=http://localhost:5000
 
 ---
 
-## 7. Deployment
-
-### Backend
-
-1. Set up a production database.
-2. Run Prisma migrations:
-   ```bash
-   npx prisma migrate deploy
-   ```
-3. Start the server:
-   ```bash
-   NODE_ENV=production node src/server.js
-   ```
-
-### Frontend
-
-1. Build the frontend:
-   ```bash
-   npm run build
-   ```
-
----
-
-## 8. Editor Setup
+## Editor Setup
 
 This project uses **EditorConfig** to maintain consistent coding styles. Most modern editors support this natively or via plugins.
 
 ---
 
-## 9. Contributing
+## Contributing
 
 1. Fork the repository.
 2. Create a new branch:
